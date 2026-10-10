@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - name: Lint
+        run: uv run ruff check .
+      - name: Tests
+        run: uv run pytest -q
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t smog-forecast-api .
+      - name: Smoke test the running container
+        run: |
+          docker run -d --name api -p 7860:7860 smog-forecast-api
+          for i in $(seq 1 30); do
+            curl -fs localhost:7860/health && break
+            sleep 2
+          done
+          curl -fs localhost:7860/model | tee /tmp/model.json
+          grep -q '"version":"smog-gbr@' /tmp/model.json
+          curl -fs localhost:7860/forecast/Lahore | tee /tmp/forecast.json || echo "live upstream unavailable (allowed)"
+          test "$(docker inspect --format '{{.Config.User}}' smog-forecast-api)" = "app"
+      - name: Container logs
+        if: always()
+        run: docker logs api || true

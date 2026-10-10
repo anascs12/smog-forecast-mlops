@@ -1,0 +1,60 @@
+name: Daily monitoring
+
+on:
+  schedule:
+    - cron: "0 2 * * *"  # 07:00 Pakistan time
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: monitoring
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --no-dev
+
+      - name: Issue, log and score forecasts; check drift
+        env:
+          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+        run: uv run --no-dev python -m smog_service.monitoring
+
+      - name: Commit monitoring state and dashboard
+        run: |
+          git config user.name "smog-monitor-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add monitoring docs
+          git diff --cached --quiet || git commit -m "Monitoring run $(TZ=Asia/Karachi date +%F)"
+          git push
+
+      - name: Open an issue when monitoring raises an alert
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          overall=$(python3 -c "import json; print(json.load(open('monitoring/status.json'))['overall'])")
+          echo "overall status: $overall"
+          [ "$overall" = "alert" ] || exit 0
+          gh label create model-alert --color DC2626 --description "Raised by daily monitoring" 2>/dev/null || true
+          if [ "$(gh issue list --label model-alert --state open --json number --jq length)" = "0" ]; then
+            body=$(python3 - <<'EOF'
+          import json
+          s = json.load(open("monitoring/status.json"))
+          lines = [f"Monitoring raised an **alert** on {s['today']} for `{s['model']['version']}`.", "", "**Accuracy (last 30 days)**", ""]
+          lines += [f"- {a['horizon']}-day: {a['status']} (live MAE {a['live_mae_30d']}, backtest {a['backtest_mae']}, n={a['scored']})" for a in s["accuracy"]]
+          lines += ["", "**Drift**", ""] + [f"- `{d['feature']}`: {d['level']} (PSI {d['psi']})" for d in s["drift"]]
+          lines += ["", "Dashboard: https://anascs12.github.io/smog-forecast-mlops/"]
+          print("\n".join(lines))
+          EOF
+            )
+            gh issue create --title "Model monitoring alert" --label model-alert --body "$body"
+          else
+            echo "An alert issue is already open; not opening another."
+          fi

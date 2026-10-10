@@ -1,0 +1,96 @@
+{
+ "generated_at": "2026-10-11T00:39+05:00",
+ "today": "2026-10-11",
+ "overall": "ok",
+ "model": {
+  "version": "smog-gbr@5d490e6",
+  "commit": "5d490e669fb42dd32c3ec1a183065d7c4ef6948f",
+  "sha256": "5e48d24d4e1806a004be669e7dd8914c375d69e7278f220bebfa63a57a498865",
+  "trained_through": "2026-09-30",
+  "horizons": [
+   1,
+   2,
+   3
+  ],
+  "backtest_mae": {
+   "1": 6.45,
+   "2": 8.01,
+   "3": 8.7
+  },
+  "persistence_mae": {
+   "1": 7.59,
+   "2": 10.38,
+   "3": 11.59
+  }
+ },
+ "monitoring_since": "2026-10-10",
+ "forecasts_logged": 12,
+ "forecasts_scored": 0,
+ "accuracy": [
+  {
+   "horizon": 1,
+   "scored": 0,
+   "live_mae_30d": null,
+   "persistence_mae_30d": null,
+   "backtest_mae": 6.45,
+   "ratio": null,
+   "status": "collecting"
+  },
+  {
+   "horizon": 2,
+   "scored": 0,
+   "live_mae_30d": null,
+   "persistence_mae_30d": null,
+   "backtest_mae": 8.01,
+   "ratio": null,
+   "status": "collecting"
+  },
+  {
+   "horizon": 3,
+   "scored": 0,
+   "live_mae_30d": null,
+   "persistence_mae_30d": null,
+   "backtest_mae": 8.7,
+   "ratio": null,
+   "status": "collecting"
+  }
+ ],
+ "drift": [
+  {
+   "feature": "pm25_lag0",
+   "psi": null,
+   "level": "insufficient data",
+   "reference_median": 36.7,
+   "current_median": 48.3
+  },
+  {
+   "feature": "blh_night_target",
+   "psi": null,
+   "level": "insufficient data",
+   "reference_median": 48.3,
+   "current_median": 109.6
+  },
+  {
+   "feature": "wind_mean_target",
+   "psi": null,
+   "level": "insufficient data",
+   "reference_median": 6.3,
+   "current_median": 5.0
+  },
+  {
+   "feature": "rh_mean_target",
+   "psi": null,
+   "level": "insufficient data",
+   "reference_median": 66.5,
+   "current_median": 81.0
+  },
+  {
+   "feature": "temp_mean_target",
+   "psi": null,
+   "level": "insufficient data",
+   "reference_median": 26.2,
+   "current_median": 23.2
+  }
+ ],
+ "drift_reference": "training days within \u00b130 days of 11 Oct (n=1056)"
+}
