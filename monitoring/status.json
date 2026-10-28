@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-10-27T12:17+05:00",
- "today": "2026-10-27",
+ "generated_at": "2026-10-28T12:54+05:00",
+ "today": "2026-10-28",
  "overall": "ok",
  "model": {
   "version": "smog-gbr@5d490e6",
@@ -24,16 +24,16 @@
   }
  },
  "monitoring_since": "2026-10-10",
- "forecasts_logged": 24,
- "forecasts_scored": 4,
+ "forecasts_logged": 36,
+ "forecasts_scored": 8,
  "accuracy": [
   {
    "horizon": 1,
-   "scored": 0,
-   "live_mae_30d": null,
-   "persistence_mae_30d": null,
+   "scored": 4,
+   "live_mae_30d": 1.29,
+   "persistence_mae_30d": 6.39,
    "backtest_mae": 6.45,
-   "ratio": null,
+   "ratio": 0.2,
    "status": "collecting"
   },
   {
@@ -60,15 +60,15 @@
    "feature": "pm25_lag0",
    "psi": null,
    "level": "insufficient data",
-   "reference_median": 38.3,
-   "current_median": 35.9
+   "reference_median": 38.5,
+   "current_median": 35.1
   },
   {
    "feature": "blh_night_target",
    "psi": null,
    "level": "insufficient data",
    "reference_median": 36.7,
-   "current_median": 33.3
+   "current_median": 31.7
   },
   {
    "feature": "wind_mean_target",
@@ -82,15 +82,15 @@
    "psi": null,
    "level": "insufficient data",
    "reference_median": 64.5,
-   "current_median": 62.5
+   "current_median": 60.1
   },
   {
    "feature": "temp_mean_target",
    "psi": null,
    "level": "insufficient data",
-   "reference_median": 23.4,
-   "current_median": 21.2
+   "reference_median": 23.1,
+   "current_median": 21.4
   }
  ],
- "drift_reference": "training days within \u00b130 days of 27 Oct (n=992)"
+ "drift_reference": "training days within \u00b130 days of 28 Oct (n=988)"
 }
