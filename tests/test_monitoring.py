@@ -3,8 +3,9 @@ from datetime import date
 import numpy as np
 import pandas as pd
 import pytest
+import requests
 
-from smog_service.monitoring import accuracy_status, psi, score, seasonal_reference
+from smog_service.monitoring import _retry, accuracy_status, psi, score, seasonal_reference
 
 
 def test_psi_is_near_zero_for_the_same_distribution_and_large_for_a_shift():
@@ -65,3 +66,25 @@ def test_score_joins_forecasts_with_truth_and_persistence():
     actuals = pd.DataFrame({"city": ["Lahore", "Lahore"], "date": ["2026-10-10", "2026-10-12"], "pm25": [40.0, 55.0]})
     row = score(predictions, actuals).iloc[0]
     assert row["abs_error"] == 5.0 and row["persistence_abs_error"] == 15.0
+
+
+def test_retry_survives_a_timeout_then_succeeds():
+    """Regression test: an Open-Meteo read timeout once failed the whole daily run."""
+    calls = []
+
+    def flaky():
+        calls.append(1)
+        if len(calls) < 3:
+            raise requests.ReadTimeout("Read timed out. (read timeout=120)")
+        return "ok"
+
+    assert _retry(flaky, "test", waits=(0, 0, 0)) == "ok"
+    assert len(calls) == 3
+
+
+def test_retry_gives_up_after_the_last_attempt():
+    def down():
+        raise requests.ConnectionError("unreachable")
+
+    with pytest.raises(requests.ConnectionError):
+        _retry(down, "test", waits=(0, 0))

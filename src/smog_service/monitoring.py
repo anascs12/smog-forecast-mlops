@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import io
 import json
+import time
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import requests
 from smog import data as smog_data
 
 from . import predictor, registry
@@ -117,6 +119,26 @@ def accuracy_status(scored: pd.DataFrame, backtest_mae: dict[int, float], today:
     return out
 
 
+# ----------------------------------------------------------------------- network
+RETRY_WAITS = (15, 45, 120)  # seconds between attempts
+
+
+def _retry(fn, what: str, waits=RETRY_WAITS):
+    """Call fn(), retrying when the network or Open-Meteo fails.
+
+    smog.data retries HTTP errors (429/5xx) itself, but a timeout or dropped connection
+    raises straight out of it; one slow Open-Meteo response once failed a whole daily run.
+    """
+    for attempt in range(len(waits) + 1):
+        try:
+            return fn()
+        except (requests.RequestException, RuntimeError) as exc:
+            if attempt == len(waits):
+                raise
+            print(f"{what}: {type(exc).__name__}: {exc}; retrying in {waits[attempt]} s")
+            time.sleep(waits[attempt])
+
+
 # --------------------------------------------------------------------------- storage
 def _load(name: str, parse=("issue_day", "target_date", "date")) -> pd.DataFrame:
     path = MON / name
@@ -141,7 +163,9 @@ def _upsert(name: str, new: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
 def observed_actuals(today: date) -> pd.DataFrame:
     rows = []
     for city in CITIES:
-        daily = smog_data.to_daily(smog_data.hourly_recent(city, past_days=14, forecast_days=1))
+        hourly = _retry(lambda city=city: smog_data.hourly_recent(city, past_days=14, forecast_days=1),
+                        f"observations for {city}")
+        daily = smog_data.to_daily(hourly)
         daily = daily[daily.index < pd.Timestamp(today)].dropna(subset=["pm25"])
         rows += [{"city": city, "date": d.strftime("%Y-%m-%d"), "pm25": round(float(v), 2)}
                  for d, v in daily["pm25"].items()]
@@ -156,7 +180,8 @@ def run(today: date | None = None) -> dict:
 
     pred_rows, input_rows = [], []
     for city in CITIES:
-        response, features = predictor.predict(loaded, predictor.live_request(city, today))
+        response, features = _retry(lambda city=city: predictor.predict(loaded, predictor.live_request(city, today)),
+                                    f"forecast for {city}")
         for f, (_, x) in zip(response.forecasts, features.iterrows(), strict=True):
             pred_rows.append({"issue_day": str(response.issue_day), "city": city, "horizon": f.horizon,
                               "target_date": str(f.date), "pm25_pred": f.pm25,
@@ -170,7 +195,8 @@ def run(today: date | None = None) -> dict:
     scored = score(predictions, actuals)
     accuracy = accuracy_status(scored, loaded.card.backtest_mae, today)
 
-    training = pd.read_csv(io.BytesIO(registry.fetch("data/processed/daily.csv")), parse_dates=["date"])
+    training = pd.read_csv(io.BytesIO(_retry(lambda: registry.fetch("data/processed/daily.csv"), "training data")),
+                           parse_dates=["date"])
     from smog import model as smog_model
     reference = seasonal_reference(smog_model.make_features(training, 1).dropna(subset=DRIFT_FEATURES), today)
     current = inputs[(inputs["horizon"] == 1)
