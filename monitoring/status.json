@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-10-30T13:02+05:00",
- "today": "2026-10-30",
+ "generated_at": "2026-10-31T12:59+05:00",
+ "today": "2026-10-31",
  "overall": "ok",
  "model": {
   "version": "smog-gbr@5d490e6",
@@ -24,16 +24,16 @@
   }
  },
  "monitoring_since": "2026-10-10",
- "forecasts_logged": 48,
- "forecasts_scored": 24,
+ "forecasts_logged": 60,
+ "forecasts_scored": 32,
  "accuracy": [
   {
    "horizon": 1,
-   "scored": 8,
-   "live_mae_30d": 3.67,
-   "persistence_mae_30d": 4.21,
+   "scored": 12,
+   "live_mae_30d": 4.45,
+   "persistence_mae_30d": 6.39,
    "backtest_mae": 6.45,
-   "ratio": 0.57,
+   "ratio": 0.69,
    "status": "collecting"
   },
   {
@@ -47,11 +47,11 @@
   },
   {
    "horizon": 3,
-   "scored": 8,
-   "live_mae_30d": 12.76,
-   "persistence_mae_30d": 17.01,
+   "scored": 12,
+   "live_mae_30d": 9.9,
+   "persistence_mae_30d": 12.96,
    "backtest_mae": 8.7,
-   "ratio": 1.47,
+   "ratio": 1.14,
    "status": "collecting"
   }
  ],
@@ -60,8 +60,8 @@
    "feature": "pm25_lag0",
    "psi": null,
    "level": "insufficient data",
-   "reference_median": 39.3,
-   "current_median": 35.9
+   "reference_median": 39.6,
+   "current_median": 36.1
   },
   {
    "feature": "blh_night_target",
@@ -82,15 +82,15 @@
    "psi": null,
    "level": "insufficient data",
    "reference_median": 64.2,
-   "current_median": 60.1
+   "current_median": 60.5
   },
   {
    "feature": "temp_mean_target",
    "psi": null,
    "level": "insufficient data",
-   "reference_median": 22.8,
+   "reference_median": 22.5,
    "current_median": 21.3
   }
  ],
- "drift_reference": "training days within \u00b130 days of 30 Oct (n=980)"
+ "drift_reference": "training days within \u00b130 days of 31 Oct (n=976)"
 }
