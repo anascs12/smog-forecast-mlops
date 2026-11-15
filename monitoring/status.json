@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-11-14T13:35+05:00",
- "today": "2026-11-14",
+ "generated_at": "2026-11-15T13:49+05:00",
+ "today": "2026-11-15",
  "overall": "alert",
  "model": {
   "version": "smog-gbr@5d490e6",
@@ -24,73 +24,73 @@
   }
  },
  "monitoring_since": "2026-10-10",
- "forecasts_logged": 228,
- "forecasts_scored": 196,
+ "forecasts_logged": 240,
+ "forecasts_scored": 208,
  "accuracy": [
   {
    "horizon": 1,
-   "scored": 68,
-   "live_mae_30d": 8.14,
-   "persistence_mae_30d": 10.5,
+   "scored": 72,
+   "live_mae_30d": 8.3,
+   "persistence_mae_30d": 10.36,
    "backtest_mae": 6.45,
-   "ratio": 1.26,
+   "ratio": 1.29,
    "status": "ok"
   },
   {
    "horizon": 2,
-   "scored": 64,
-   "live_mae_30d": 10.84,
-   "persistence_mae_30d": 14.54,
+   "scored": 68,
+   "live_mae_30d": 10.56,
+   "persistence_mae_30d": 15.02,
    "backtest_mae": 8.01,
-   "ratio": 1.35,
+   "ratio": 1.32,
    "status": "warn"
   },
   {
    "horizon": 3,
-   "scored": 60,
-   "live_mae_30d": 13.72,
-   "persistence_mae_30d": 17.96,
+   "scored": 64,
+   "live_mae_30d": 13.67,
+   "persistence_mae_30d": 18.37,
    "backtest_mae": 8.7,
-   "ratio": 1.58,
+   "ratio": 1.57,
    "status": "warn"
   }
  ],
  "drift": [
   {
    "feature": "pm25_lag0",
-   "psi": 0.149,
+   "psi": 0.191,
    "level": "moderate",
-   "reference_median": 42.2,
-   "current_median": 42.8
+   "reference_median": 42.4,
+   "current_median": 43.0
   },
   {
    "feature": "blh_night_target",
-   "psi": 0.134,
+   "psi": 0.149,
    "level": "moderate",
-   "reference_median": 32.5,
-   "current_median": 37.9
+   "reference_median": 31.7,
+   "current_median": 39.2
   },
   {
    "feature": "wind_mean_target",
-   "psi": 1.012,
+   "psi": 0.939,
    "level": "significant",
    "reference_median": 5.8,
-   "current_median": 4.6
+   "current_median": 4.8
   },
   {
    "feature": "rh_mean_target",
-   "psi": 0.35,
+   "psi": 0.486,
    "level": "significant",
    "reference_median": 63.1,
-   "current_median": 66.4
+   "current_median": 66.8
   },
   {
    "feature": "temp_mean_target",
-   "psi": 3.314,
+   "psi": 2.416,
    "level": "significant",
-   "reference_median": 20.3,
-   "current_median": 21.0
+   "reference_median": 20.1,
+   "current_median": 20.7
   }
  ],
- "drift_reference": "training days within \u00b130 days of 14 Nov (n=976)"
+ "drift_reference": "training days within \u00b130 days of 15 Nov (n=972)"
 }
